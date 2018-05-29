@@ -54,7 +54,7 @@ def compute_dinucleo():
     sequence = ''
     #dinucleo = ['AG', 'AA', 'AC', 'AT','CG', 'CA', 'CC', 'CT','GG', 'GA', 'GC', 'GT', 'TG', 'TA', 'TC', 'TT']
     #count = 0
-    item = 'AG'
+    #item = 'AG'
     temp_dict = defaultdict(int)
     with open('Dinucleotide Frequency: 03.fa.txt', 'w') as w:
         with open('03.fa.txt', 'r') as f:
@@ -128,7 +128,29 @@ def compute_aa():
             #print(res)
             w.write('Amino acid frequency of '+item+' is ' + str(res) + '\n')
     
-
+def compute_diaa(): # FINISH
+    trans = trans_aa()
+    list_aa = ['A', 'G', 'I', 'L', 'P', 'V', 'F', 'W','Y', 'D', 'E', 'R', 'H', 'K', 'S', 'T', 'C', 'M', 'N', 'Q'] 
+    trans = trans_aa()
+    #print(trans)
+    temp_dict = defaultdict(int)
+    with open('Diamino acid Frequency: 03.fa.txt', 'w') as w:
+        for line in trans:   
+            for item in range(len(list_aa)):
+                    temp_dict[list_aa[item:item+2]] +=1
+                for k,v in sorted(temp_dict.items()):
+                    total = sum(temp_dict.values())
+                    result = float(v)/total
+                    #print(result)
+                    w.write('Dinucleotide frequency of '+ k+' is '+ str(result)+'\n')
+                    
+    with open('Amino acid Frequency: 03.fa.txt', 'w') as w:
+        for item in list_aa:
+            i = trans.count(item)
+            #print (len(trans), i, i/len(trans))
+            res = float(i)/(len(trans)-1)
+            #print(res)
+            w.write('Amino acid frequency of '+item+' is ' + str(res) + '\n')    
 
 ##############################################################
 ######################### ORF FINDER #########################
@@ -278,7 +300,8 @@ if __name__ == '__main__':
     #print(compute_dinucleo()) 
     #print(compute_nucleo())
     #print(trans_aa())
-    print(compute_aa())
+    #print(compute_aa())
+    print(compute_diaa())
     #print(complementDNA())  
     #print(ORF_finder())
     #print(distance_matrix())
