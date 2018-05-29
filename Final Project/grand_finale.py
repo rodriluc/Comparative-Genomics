@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 import math 
 import numpy as np
-from string import maketrans
+from Bio.Data import CodonTable
 #gc, dinucleotide, amino acid
 
 
@@ -15,13 +15,10 @@ def compute_gc():
     #ignore = re.compile('^[ \\t]*#.*', re.IGNORECASE)
     with open('GC content Frequency: 50.fa.txt', 'w') as w:
         with open('50.fa.txt', 'r') as f:
-    #with open(filename, 'r') as f:
-            #f = f.readlines()
             for line in f:
-                #print(line)
                 if not line.startswith('>'):
-                    sequence += line
-                    #print(sequence)
+                    sequence += line                
+                    
                     C=sequence.count('C') #count C
                     G=sequence.count('G') #count G
                     total=len(sequence)
@@ -32,14 +29,35 @@ def compute_gc():
             #return res
 #look for GC content then sum/sequence
 
+def compute_nucleo():
+    sequence = ''
+    with open('Nucleotide Frequency: 50.fa.txt', 'w') as w:
+        with open('50.fa.txt', 'r') as f:
+            for line in f:
+                if not line.startswith('>'):
+                    sequence += line
+                    C=sequence.count('C') 
+                    G=sequence.count('G') 
+                    A=sequence.count('A') 
+                    T=sequence.count('T')
+                    total=len(sequence)
+                    resG = float(G)/total
+                    resC = float(C)/total 
+                    resA = float(A)/total
+                    resT = float(T)/total
+            w.write('The G nucleotide frequency is '+ str(resG)+'\n')
+            w.write('The C nucleotide frequency is '+ str(resC)+'\n') 
+            w.write('The A nucleotide frequency is '+ str(resA)+'\n') 
+            w.write('The T nucleotide frequency is '+ str(resT))     
+
 def compute_dinucleo():
     sequence = ''
     #dinucleo = ['AG', 'AA', 'AC', 'AT','CG', 'CA', 'CC', 'CT','GG', 'GA', 'GC', 'GT', 'TG', 'TA', 'TC', 'TT']
     #count = 0
     item = 'AG'
     temp_dict = defaultdict(int)
-    with open('Dinucleotide Frequency: 50.fa.txt', 'w') as w:
-        with open('50.fa.txt', 'r') as f:
+    with open('Dinucleotide Frequency: 03.fa.txt', 'w') as w:
+        with open('03.fa.txt', 'r') as f:
             for line in f:
                 if not line.startswith('>'):
                     sequence += line
@@ -47,7 +65,10 @@ def compute_dinucleo():
                 for item in range(len(sequence)-1):
                     temp_dict[sequence[item:item+2]] +=1
                 for k,v in sorted(temp_dict.items()):
-                    w.write('Dinucleotide frequency of '+ k+' is '+ str(v)+'\n')
+                    total = sum(temp_dict.values())
+                    result = float(v)/total
+                    #print(result)
+                    w.write('Dinucleotide frequency of '+ k+' is '+ str(result)+'\n')
                     
                 '''for item in dinucleo: #specify item
                     if item in sequence:
@@ -58,18 +79,54 @@ def compute_dinucleo():
     #print ('The dinucleotide frequency of AG is ', res, '\n') #do one at a time or print all
 # AA, AC, AG, AT, CA, CC, CG, CT, GA, GC, GG, GT, TA, TC, TG, TT  
        
-def compute_aa(): #tanslate ORF list and then comput_aa
+def trans_aa(): #tanslate ORF list and then comput_aa
     sequence = ''
-    list_aa = ['A', 'G', 'I', 'L', 'P', 'V', 'F', 'W','Y', 'D', 'E', 'R', 'H', 'K', 'S', 'T', 'C', 'M', 'N', 'Q'] #20aa
-    with open('Amino acid Frequency', 'w') as w:
-        with open('ORF Finder FASTA', 'r') as f:
-            for line in f:
-                if not line.startswith('>'):
-                    sequence += line       
-            for item in list_aa:
-                i = sequence.count(item)
-                res = i/(len(sequence) - 1)
-                w.write('Amino acid frequency of '+item+' is ' + str(res) + '\n')
+
+    trans_dict = {'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
+    'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
+    'AAC':'N', 'AAT':'N', 'AAA':'K', 'AAG':'K',
+    'AGC':'S', 'AGT':'S', 'AGA':'R', 'AGG':'R',
+    'CTA':'L', 'CTC':'L', 'CTG':'L', 'CTT':'L',
+    'CCA':'P', 'CCC':'P', 'CCG':'P', 'CCT':'P',
+    'CAC':'H', 'CAT':'H', 'CAA':'Q', 'CAG':'Q',
+    'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R',
+    'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V',
+    'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A',
+    'GAC':'D', 'GAT':'D', 'GAA':'E', 'GAG':'E',
+    'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G',
+    'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S',
+    'TTC':'F', 'TTT':'F', 'TTA':'L', 'TTG':'L',
+    'TAC':'Y', 'TAT':'Y', 'TGG':'W', 'TGT':'C',
+    'TGC':'C'} #didn'include stop since not in ORF
+    #table = CodonTable.ambiguous_dna_by_id[1]
+
+    with open('ORF finder FASTA: 03.fa.txt', 'r') as f:
+        temp_list = []
+        for line in f:
+            if not line.startswith('>'):
+                sequence = line 
+                new = ''
+                for i in range(0, len(sequence), 3):
+                    #print(sequence[i:i+3])
+                    if sequence[i:i+3] in trans_dict.keys():
+                        new += trans_dict[sequence[i:i+3]] #if have to create own dictionary              
+                        #new_list.extend(new)    
+                temp_list.append(new)
+        return ''.join(temp_list)
+                
+                    #protein_seq = _translate_str(sequence, table)
+                    
+def compute_aa():
+    list_aa = ['A', 'G', 'I', 'L', 'P', 'V', 'F', 'W','Y', 'D', 'E', 'R', 'H', 'K', 'S', 'T', 'C', 'M', 'N', 'Q'] 
+    trans = trans_aa()
+    #print(trans)
+    with open('Amino acid Frequency: 03.fa.txt', 'w') as w:
+        for item in list_aa:
+            i = trans.count(item)
+            #print (len(trans), i, i/len(trans))
+            res = float(i)/(len(trans)-1)
+            #print(res)
+            w.write('Amino acid frequency of '+item+' is ' + str(res) + '\n')
     
 
 
@@ -79,7 +136,7 @@ def compute_aa(): #tanslate ORF list and then comput_aa
 
 def complementDNA():
     s = ''
-    with open('50.fa.txt', 'r') as f:
+    with open('03.fa.txt', 'r') as f:
         for line in f:
                 if not line.startswith('>'):
                     s += line 
@@ -96,7 +153,7 @@ def complementDNA():
                     
 def rev_complementDNA():
     s = ''
-    with open('50.fa.txt', 'r') as f:
+    with open('03.fa.txt', 'r') as f:
         for line in f:
                 if not line.startswith('>'):
                     s += line 
@@ -117,7 +174,7 @@ def ORF_finder():
     complement = complementDNA()
     reverse_complement = rev_complementDNA()
     #stop_codon = ['TAG','TAA','TGA']
-    with open('ORF finder FASTA: 50.fa.txt', 'w') as w:  
+    with open('ORF finder FASTA: 03.fa.txt', 'w') as w:  
         #codon_list = [] #forward strand list
         for i in range(len(complement)-2): #iterates over all possible positions where a codon begin, so all except last 2
             #codon_list.append(complement[i:i+3])
@@ -214,15 +271,17 @@ def distance_matrix():
         for x in range(0,len(input_genomes)):
             for y in range(0,len(input_genomes)):
                 d_matrix[x,y] = math.sqrt((input_genomes[x]-input_genomes[y])**2)
-        w.write(d_matrix)
+    print(d_matrix)
     
 if __name__ == '__main__':
     #print(compute_gc())   
     #print(compute_dinucleo()) 
-    #print(compute_aa())
+    #print(compute_nucleo())
+    #print(trans_aa())
+    print(compute_aa())
     #print(complementDNA())  
     #print(ORF_finder())
-    print(distance_matrix())
+    #print(distance_matrix())
     
 
     
