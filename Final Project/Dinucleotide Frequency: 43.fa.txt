@@ -1,18 +1,18 @@
-Dinucleotide frequency of AA is 544292
-Dinucleotide frequency of AC is 233671
-Dinucleotide frequency of AG is 284719
-Dinucleotide frequency of AT is 507233
-Dinucleotide frequency of CA is 288364
-Dinucleotide frequency of CC is 163601
-Dinucleotide frequency of CG is 117089
-Dinucleotide frequency of CT is 278035
-Dinucleotide frequency of GA is 290065
-Dinucleotide frequency of GC is 168424
-Dinucleotide frequency of GG is 171448
-Dinucleotide frequency of GT is 236527
+Dinucleotide frequency of AA is 0.112280855204
+Dinucleotide frequency of AC is 0.0482035005407
+Dinucleotide frequency of AG is 0.058734085404
+Dinucleotide frequency of AT is 0.104636031813
+Dinucleotide frequency of CA is 0.0594860048098
+Dinucleotide frequency of CC is 0.0337489071898
+Dinucleotide frequency of CG is 0.0241540442537
+Dinucleotide frequency of CT is 0.0573552570615
+Dinucleotide frequency of GA is 0.0598369005325
+Dinucleotide frequency of GC is 0.0347438337452
+Dinucleotide frequency of GG is 0.0353676483633
+Dinucleotide frequency of GT is 0.0487926587911
 Dinucleotide frequency of T
- is 1
-Dinucleotide frequency of TA is 447194
-Dinucleotide frequency of TC is 281393
-Dinucleotide frequency of TG is 293208
-Dinucleotide frequency of TT is 542330
+ is 2.06287902824e-07
+Dinucleotide frequency of TA is 0.0922507124153
+Dinucleotide frequency of TC is 0.0580479718392
+Dinucleotide frequency of TG is 0.0604852634111
+Dinucleotide frequency of TT is 0.111876118338
