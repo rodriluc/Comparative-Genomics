@@ -1,0 +1,4 @@
+The G nucleotide frequency is 0.214478596823
+The C nucleotide frequency is 0.213283644182
+The A nucleotide frequency is 0.284255135224
+The T nucleotide frequency is 0.285490679032
