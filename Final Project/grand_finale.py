@@ -2,7 +2,8 @@ import re
 from collections import defaultdict
 import math 
 import numpy as np
-from Bio.Data import CodonTable
+from Bio.Data import CodonTable #not in use
+import itertools
 #gc, dinucleotide, amino acid
 
 
@@ -128,29 +129,42 @@ def compute_aa():
             #print(res)
             w.write('Amino acid frequency of '+item+' is ' + str(res) + '\n')
     
-def compute_diaa(): # FINISH
-    trans = trans_aa()
-    list_aa = ['A', 'G', 'I', 'L', 'P', 'V', 'F', 'W','Y', 'D', 'E', 'R', 'H', 'K', 'S', 'T', 'C', 'M', 'N', 'Q'] 
+def compute_diaa(): 
+    
     trans = trans_aa()
     #print(trans)
-    temp_dict = defaultdict(int)
+    '''temp_dict = defaultdict(int)
     with open('Diamino acid Frequency: 03.fa.txt', 'w') as w:
         for line in trans:   
-            for item in range(len(list_aa)):
-                    temp_dict[list_aa[item:item+2]] +=1
+            for item in range(len(trans)):
+                temp_dict[trans[item:item+2]] +=1
                 for k,v in sorted(temp_dict.items()):
                     total = sum(temp_dict.values())
                     result = float(v)/total
                     #print(result)
-                    w.write('Dinucleotide frequency of '+ k+' is '+ str(result)+'\n')
+                    w.write(k+' : '+ str(result)+'\n')'''
                     
-    with open('Amino acid Frequency: 03.fa.txt', 'w') as w:
-        for item in list_aa:
-            i = trans.count(item)
-            #print (len(trans), i, i/len(trans))
-            res = float(i)/(len(trans)-1)
-            #print(res)
-            w.write('Amino acid frequency of '+item+' is ' + str(res) + '\n')    
+    #option 1 works BUT very slowly, test option 2
+                        
+    list_aa1 = ['A', 'G', 'I', 'L', 'P', 'V', 'F', 'W','Y', 'D', 'E', 'R', 'H', 'K', 'S', 'T', 'C', 'M', 'N', 'Q'] 
+    list_aa2 = ['A', 'G', 'I', 'L', 'P', 'V', 'F', 'W','Y', 'D', 'E', 'R', 'H', 'K', 'S', 'T', 'C', 'M', 'N', 'Q']
+    zip_diaa = [zip(x,list_aa2) for x in itertools.permutations(list_aa1,len(list_aa2))]
+    print (zip_diaa)
+    poss_combo = dict(enumerate(zip_diaa,1)) 
+    kl = []
+    vl = []
+    with open('Diamino acid Frequency: 03.fa.txt', 'w') as w:
+        for k, v in zip_diaa.items():
+            kl.append(v)
+        set_keys = set(kl)
+        for item in range(0, len(trans)):
+            total = len(zip_diaa)
+            result = float(count)/total
+            #print(result)
+            w.write(k+' : '+ str(result)+'\n')
+                 
+                    
+        
 
 ##############################################################
 ######################### ORF FINDER #########################
@@ -231,7 +245,7 @@ def ORF_finder():
 ######################### DISTANCE MATRIX TOOL #########################
 ########################################################################    
 
-def distance_matrix():
+def distance_matrix_gc():
 #The tool should compute the distance between two genomes from the DNA statistic above. The distance matrix is then used to create a species tree
 
 #matrix one against all
@@ -295,16 +309,77 @@ def distance_matrix():
                 d_matrix[x,y] = math.sqrt((input_genomes[x]-input_genomes[y])**2)
     print(d_matrix)
     
+def distance_matrix_dinucl():
+    sequence=''  
+    with open('Distance Matrix', 'w') as w:                  
+        with open ('03.fa.txt') as f1:
+            with open ('28.fa.txt') as f2:
+                with open ('43.fa.txt') as f3:
+                    with open ('48.fa.txt') as f4:
+                        with open ('50.fa.txt') as f5:  
+                            temp_dict = defaultdict(int)
+                            for line in f1:
+                                if not line.startswith('>'):
+                                    sequence += line
+                                    for item in range(len(sequence)-1):
+                                        temp_dict[sequence[item:item+2]] +=1
+                                    for k,v in sorted(temp_dict.items()):
+                                        total = sum(temp_dict.values())
+                                        res1 = float(v)/total
+                            for line in f2:
+                                if not line.startswith('>'):
+                                    sequence += line
+                                    for item in range(len(sequence)-1):
+                                        temp_dict[sequence[item:item+2]] +=1
+                                    for k,v in sorted(temp_dict.items()):
+                                        total = sum(temp_dict.values())
+                                        res2 = float(v)/total
+                            for line in f3:
+                                if not line.startswith('>'):
+                                    sequence += line
+                                    for item in range(len(sequence)-1):
+                                        temp_dict[sequence[item:item+2]] +=1
+                                    for k,v in sorted(temp_dict.items()):
+                                        total = sum(temp_dict.values())
+                                        res3 = float(v)/total
+                            for line in f4:
+                                if not line.startswith('>'):
+                                    sequence += line
+                                    for item in range(len(sequence)-1):
+                                        temp_dict[sequence[item:item+2]] +=1
+                                    for k,v in sorted(temp_dict.items()):
+                                        total = sum(temp_dict.values())
+                                        res4 = float(v)/total
+                            for line in f5:
+                                if not line.startswith('>'):
+                                    sequence += line
+                                    for item in range(len(sequence)-1):
+                                        temp_dict[sequence[item:item+2]] +=1
+                                    for k,v in sorted(temp_dict.items()):
+                                        total = sum(temp_dict.values())
+                                        res5 = float(v)/total
+        #print (res1)
+        d_matrix = np.zeros((5,5))
+        #print(d_matrix)
+        input_genomes = [res1, res2, res3, res4, res5]
+        for x in range(0,len(input_genomes)):
+            for y in range(0,len(input_genomes)):
+                d_matrix[x,y] = math.sqrt((input_genomes[x]-input_genomes[y])**2)
+    print(d_matrix)
+    
+    
+    
 if __name__ == '__main__':
     #print(compute_gc())   
     #print(compute_dinucleo()) 
     #print(compute_nucleo())
     #print(trans_aa())
     #print(compute_aa())
-    print(compute_diaa())
+    #print(compute_diaa())
     #print(complementDNA())  
     #print(ORF_finder())
-    #print(distance_matrix())
+    #print(distance_matrix_gc())
+    print(distance_matrix_dinucl())
     
 
     
