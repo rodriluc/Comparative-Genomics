@@ -118,7 +118,57 @@ def trans_aa(): #tanslate ORF list and then comput_aa
                 
                     #protein_seq = _translate_str(sequence, table)
                     
-#def convert_protein():
+def convert_protein():
+
+    sequence = ''
+
+    trans_dict = {'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
+    'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
+    'AAC':'N', 'AAT':'N', 'AAA':'K', 'AAG':'K',
+    'AGC':'S', 'AGT':'S', 'AGA':'R', 'AGG':'R',
+    'CTA':'L', 'CTC':'L', 'CTG':'L', 'CTT':'L',
+    'CCA':'P', 'CCC':'P', 'CCG':'P', 'CCT':'P',
+    'CAC':'H', 'CAT':'H', 'CAA':'Q', 'CAG':'Q',
+    'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R',
+    'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V',
+    'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A',
+    'GAC':'D', 'GAT':'D', 'GAA':'E', 'GAG':'E',
+    'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G',
+    'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S',
+    'TTC':'F', 'TTT':'F', 'TTA':'L', 'TTG':'L',
+    'TAC':'Y', 'TAT':'Y', 'TGG':'W', 'TGT':'C',
+    'TGC':'C'} 
+    
+    with open('ORF finder FASTA: 03.fa.txt', 'r') as f:
+        with open('proteome_03', 'w') as w:
+        
+            '''prot_dict = {}
+            names = []
+            temp_list = []
+            for line in f:
+                #print(line)
+                if line.startswith('>'):
+                    names.append(line[0:-1])
+                    #print(names)
+                if not line.startswith('>'):
+                    sequence = line 
+                    new = ''
+                    for i in range(0, len(sequence), 3):
+                        #print(sequence[i:i+3])
+                        if sequence[i:i+3] in trans_dict.keys():
+                            new += trans_dict[sequence[i:i+3]]     
+                    #temp_list.append(''.join(new))
+                    w.write(names+'\n'+new) '''
+                    #return prot_dict
+            for line[1::2] in f:
+                sequence = line 
+                new = ''
+                for i in range(0, len(sequence), 3):
+                    #print(sequence[i:i+3])
+                    if sequence[i:i+3] in trans_dict.keys():
+                        new += trans_dict[sequence[i:i+3]] 
+                w.write(line[0::2]+'\n'+new)
+                
 
                     
 def compute_aa():
@@ -232,24 +282,14 @@ def compute_diaa():
 
 def complementDNA():
     s = ''
-    with open('03.fa.txt', 'r') as f:
+    with open('50.fa.txt', 'r') as f:
         for line in f:
-                if not line.startswith('>'):
-                    s += line 
-                    for ch in f:
-                        if ch=='A':
-                            s=s+'T'
-                        elif ch=='T':
-                            s=s+'A'
-                        elif ch=='G':
-                            s=s+'C'
-                        else:
-                            s=s+'G'
-                    return s #complement
+            s+=line
+        return s #complement USELESS'''
                     
 def rev_complementDNA():
     s = ''
-    with open('03.fa.txt', 'r') as f:
+    with open('50.fa.txt', 'r') as f:
         for line in f:
                 if not line.startswith('>'):
                     s += line 
@@ -266,38 +306,40 @@ def rev_complementDNA():
     
 def ORF_finder():
 #The input should be a genome file in FASTA format; the output should also be a file in FASTA format with separate entries for each ORF gene sequences and unique names identifying these ORFs
-
+    
     complement = complementDNA()
     reverse_complement = rev_complementDNA()
     #stop_codon = ['TAG','TAA','TGA']
-    with open('ORF finder FASTA: 03.fa.txt', 'w') as w:  
+    with open('ORF finder FASTA: 50.fa.txt', 'w') as w:  
         #codon_list = [] #forward strand list
-        for i in range(len(complement)-2): #iterates over all possible positions where a codon begin, so all except last 2
+        #for i in range(len(complement)): #iterates over all possible positions where a codon begin, so all except last 2
+            #print(len(complement))
             #codon_list.append(complement[i:i+3]) 
             #codon_list.append(complement)
             #complement.count('ATG')
             #return codon_list
             
-            correct_way = re.compile(r'(?=(ATG(?:...)*?)(?:TAG|TAA|TGA))') #starts with ATG then go to the next stop codon...so on
-            
+        correct_way = re.compile(r'(?=(ATG(?:...)*?)(?:TAG|TAA|TGA))') #starts with ATG then go to the next stop codon...so on
+            #for line in correct_way:
+                
             #return set(correct_way.findall(complement))
             #i need to exclude the strings with start codons inside
             #read backwards solve ^ problem or $
-            count = 0
-            for i in correct_way.findall(complement):
-                if  len(i) > 300: #chose 100 because of Karlin et al. reference
-                    #tack Kajetan format help
-                    w.write('>ORF_{}\n{}\n'.format(count, ''.join(str(i)))) #took out set so takes gene duplication into account, since findall takes into account overlaps...way too many kept the set
-                    count+=1
-            
-            #break        
-            count = 0
-            for i in correct_way.findall(reverse_complement):
-                if len(i) > 300:        #100<= len(i) <=500:
-                    w.write('>ORF_rev_{}\n{}\n'.format(count, ''.join(str(i)))) #write function sooooooooooooo slow don't know why, change to print to see results
-                    count+=1
-                    
-            break
+        count = 0
+        for i in correct_way.findall(complement):
+            if  len(i) > 300: #chose 100 because of Karlin et al. reference
+                #tack Kajetan format help
+                w.write('>ORF_{}\n{}\n'.format(count, ''.join(str(i)))) #took out set so takes gene duplication into account, since findall takes into account overlaps...way too many kept the set
+                count+=1
+        
+        #break        
+        count = 0
+        for i in correct_way.findall(reverse_complement):
+            if len(i) > 300:        #100<= len(i) <=500:
+                w.write('>ORF_rev_{}\n{}\n'.format(count, ''.join(str(i)))) #write function sooooooooooooo slow don't know why, change to print to see results
+                count+=1
+                
+            #break
             #REGEX FOR THE WIN
             #print(string, file=filename)
 
@@ -434,10 +476,11 @@ if __name__ == '__main__':
     #print(compute_dinucleo()) 
     #print(compute_nucleo())
     #print(trans_aa())
+    #print(convert_protein())
     #print(compute_aa())
-    print(compute_diaa())
+    #print(compute_diaa())
     #print(complementDNA())  
-    #print(ORF_finder())
+    print(ORF_finder())
     #print(distance_matrix_gc())
     #print(distance_matrix_dinucl())
     

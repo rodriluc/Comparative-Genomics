@@ -61,7 +61,7 @@ def compare_orf(input_files):
    
     TP=0 # true positive
     TP_list = []
-    for line in correct_orf: #TP    , do i need line.strip()
+    for line in correct_orf: #do i need line.strip()
         #nextLine = next(correct)
         if line in correct_glim:
             TP+=1
@@ -70,7 +70,7 @@ def compare_orf(input_files):
     
     FP=0 # false positive
     FP_list = []
-    for line in correct_orf: #TP
+    for line in correct_orf: 
         #nextLine = next(correct)
         if  line not in correct_glim:
             FP+=1
@@ -79,7 +79,7 @@ def compare_orf(input_files):
     
     FN=0 # false negative
     FN_list = []
-    for line in correct_glim: #TP
+    for line in correct_glim: 
         #nextLine = next(correct)
         if line not in correct_orf:
             FN+=1
@@ -89,19 +89,31 @@ def compare_orf(input_files):
 def sn_sp():
 #sn = TP/(TP+FN)
 #sp = TP/(TP+FP)
-    x = compare_orf()
+    TP = compare_orf(input_files)[0]
+    FP = compare_orf(input_files)[1]
+    FN = compare_orf(input_files)[2]
 #SENSITIVITY
-    sn = x[0]/(x[0]+x[2])
-#SENSIBILITY
-    sp = x[0]/(x[0]+x[1])
+    sn = TP/(TP+FN)
+#SPECIFICITY
+    sp = TP/(TP+FP)
+    print('sn = ',sn,'\n','sp = ',sp) 
     
-    print('sn = ',sn,'\n','sp = ',sp)
-    
+def f1_score(): #F1 SCORE
+    TP = compare_orf(input_files)[0]
+    FP = compare_orf(input_files)[1]
+    FN = compare_orf(input_files)[2]
+    if TP > 0:
+        precision = float(TP)/(TP+FP) # TP/(TP+FP)
+        recall = float(TP)/(TP+FN)# TP/(TP+FN)
+        return 2*((precision*recall)/(precision+recall))
+    else:
+        return 0
             
 if __name__ == '__main__':
     input_files = sys.argv[1:]
-    print(compare_orf(input_files))
+    #print(compare_orf(input_files))
     #print(sn_sp())
+    print(f1_score())
 
         
     

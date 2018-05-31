@@ -1,0 +1,24 @@
+genome03
+TP: 1337
+FP: 21986
+FN: 1853
+
+genome28
+TP: 88
+FP: 1232
+FN: 139
+
+genome43
+TP: 1219
+FP: 14139
+FN: 1912
+
+genome48
+TP: 257
+FP: 1513
+FN: 379
+
+genome50
+TP: 986
+FP: 13073
+FN: 1972
