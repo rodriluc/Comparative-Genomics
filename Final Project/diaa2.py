@@ -6,7 +6,7 @@ import numpy as np
 from string import maketrans
 import sys
 
-def trans_aa(input_fasta): #tanslate ORF list and then comput_aa
+def trans_aa(input_fasta): #translate ORF list and then comput_aa
     sequence = ''
 
     trans_dict = {'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
@@ -34,14 +34,14 @@ def trans_aa(input_fasta): #tanslate ORF list and then comput_aa
                 sequence = line 
                 new = ''
                 for i in range(0, len(sequence), 3):
-                    #print(sequence[i:i+3])
+                    
                     if sequence[i:i+3] in trans_dict.keys():
-                        new += trans_dict[sequence[i:i+3]] #if have to create own dictionary              
-                        #new_list.extend(new)    
+                        new += trans_dict[sequence[i:i+3]]            
+                           
                 temp_list.append(new)
         return ''.join(temp_list)
                 
-                    #protein_seq = _translate_str(sequence, table)
+                    
 
 def compute_diaa(input_fasta): 
     list_diaa = ['GG', 'GA', 'GL', 'GM', 'GF', 'GW', 'GK', 'GQ', 'GE', 'GS',

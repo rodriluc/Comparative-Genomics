@@ -8,6 +8,24 @@ done
 for file in *.fasta
 do 
 echo $file
+python2 -c "import grand_finale; grand_finale.compute_gc('$file')"
+done
+
+for file in *.fasta
+do 
+echo $file
+python2 -c "import grand_finale; grand_finale.compute_nucleo('$file')"
+done
+
+for file in *.fasta
+do 
+echo $file
+python2 -c "import grand_finale; grand_finale.compute_dinucleo('$file')"
+done
+
+for file in *.fasta
+do 
+echo $file
 python2 -c "import grand_finale; grand_finale.compute_aa('$file')"
 done
 

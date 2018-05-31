@@ -61,10 +61,12 @@ def compute_dinucleo():
     with open('Dinucleotide Frequency: 03.fa.txt', 'w') as w:
         with open('03.fa.txt', 'r') as f:
             for line in f:
+                undefined=sequence.count('N')
                 if not line.startswith('>'):
                     sequence += line
+                    
                     #total = len(sequence)-1
-                for item in range(len(sequence)-1):
+                for item in range((len(sequence)-1)-(2*undefined)):
                     temp_dict[sequence[item:item+2]] +=1
                 for k,v in sorted(temp_dict.items()):
                     total = sum(temp_dict.values())
@@ -102,7 +104,7 @@ def trans_aa(): #tanslate ORF list and then comput_aa
     'TGC':'C'} #didn'include stop since not in ORF
     #table = CodonTable.ambiguous_dna_by_id[1]
 
-    with open('ORF finder FASTA: 03.fa.txt', 'r') as f:
+    with open('ORF finder FASTA: 50.fa.txt', 'r') as f:
         temp_list = []
         for line in f:
             if not line.startswith('>'):
@@ -227,11 +229,11 @@ def compute_diaa():
     trans = trans_aa()
     #print(trans)
     
-    with open('Diamino acid Frequency: 03.fa.txt', 'w') as w:
+    with open('Diamino acid Frequency: 50.fa.txt', 'w') as w:
         for item in list_diaa:
             i = trans.count(item)
             #print (len(trans), i, i/len(trans))
-            res = float(i)/(len(trans))
+            res = float(i)/(len(trans)-1) #does not count the X
             #print(res)
             w.write(item+' : '+ str(res)+'\n')
             
@@ -478,9 +480,9 @@ if __name__ == '__main__':
     #print(trans_aa())
     #print(convert_protein())
     #print(compute_aa())
-    #print(compute_diaa())
+    print(compute_diaa())
     #print(complementDNA())  
-    print(ORF_finder())
+    #print(ORF_finder())
     #print(distance_matrix_gc())
     #print(distance_matrix_dinucl())
     

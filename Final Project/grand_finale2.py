@@ -14,18 +14,9 @@ def complementDNA(input_genome):
     s = ''
     with open(input_genome, 'r') as f:
         for line in f:
-                if not line.startswith('>'):
-                    s += line 
-                    for ch in f:
-                        if ch=='A':
-                            s=s+'T'
-                        elif ch=='T':
-                            s=s+'A'
-                        elif ch=='G':
-                            s=s+'C'
-                        else:
-                            s=s+'G'
-                    return s #complement
+            for line in f:
+                s+=line
+        return s #not complement, raw sequence as string
                     
 def rev_complementDNA(input_genome):
     s = ''
@@ -52,26 +43,21 @@ def ORF_finder(input_genome):
     reverse_complement = rev_complementDNA(input_genome)
     with open(input_genome + '_ORF_finder.fasta', 'w') as w:  
     #stop_codon = ['TAG','TAA','TGA']  
-        for i in range(len(complement)-2): #iterates over all possible positions where a codon begin, so all except last 2
             
-            correct_way = re.compile(r'(?=(ATG(?:...)*?)(?:TAG|TAA|TGA))') #starts with ATG then go to the next stop codon...so on
-            
-            #i need to exclude the strings with start codons inside
+        correct_way = re.compile(r'(?=(ATG(?:...)*?)(?:TAG|TAA|TGA))') #starts with ATG then go to the next stop codon...so on
+            #for line in correct_way:
             #read backwards solve ^ problem or $
-            count = 0
-            for i in correct_way.findall(complement):
-                if  len(i) > 300: #chose 100 because of Karlin et al. reference
-                    #tack Kajetan format help
-                    w.write('>ORF_{}\n{}\n'.format(count, ''.join(str(i)))) #took out set so takes gene duplication into account, since findall takes into account overlaps...way too many kept the set
-                    count+=1
-
-            count = 0
-            for i in correct_way.findall(reverse_complement):
-                if len(i) > 300:        #100<= len(i) <=500:
-                    w.write('>ORF_rev_{}\n{}\n'.format(count, ''.join(str(i)))) #write function sooooooooooooo slow don't know why, change to print to see results
-                    count+=1
-                    
-            break
+        count = 0
+        for i in correct_way.findall(complement):
+            if  len(i) > 300: #chose 300 because of Karlin et al. reference
+                w.write('>ORF_{}\n{}\n'.format(count, ''.join(str(i)))) #took out set so takes gene duplication into account, since findall takes into account overlaps with correct_way
+                count+=1
+       
+        count = 0
+        for i in correct_way.findall(reverse_complement):
+            if len(i) > 300: #only ORFs longer then 300 nucleotides 
+                w.write('>ORF_rev_{}\n{}\n'.format(count, ''.join(str(i)))) 
+                count+=1
 
 
 ###################################################################
@@ -82,7 +68,6 @@ def compute_gc(input_genome):
     sequence = ''
     with open(input_genome + '_GC_content_Frequency', 'w') as w:
         with open(input_genome, 'r') as f:
-    #with open(filename, 'r') as f:
             for line in f:
                 if not line.startswith('>'):
                     sequence += line
@@ -91,24 +76,43 @@ def compute_gc(input_genome):
                     total=len(sequence)
                     res = float(C+G)/total #sum of GC count/total
             w.write('The GC content frequency is '+ str(res))
-
-#look for GC content then sum/sequence
-
-def compute_dinucleo(input_genome):
+            
+def compute_nucleo(input_genome):
     sequence = ''
-    item = 'AG'
-    temp_dict = defaultdict(int)
-    with open(input_genome + '_Dinucleotide_Frequency', 'w') as w:
+    with open(input_genome + '_Nucleotide_Frequency', 'w') as w:
         with open(input_genome, 'r') as f:
             for line in f:
                 if not line.startswith('>'):
                     sequence += line
-                for item in range(len(sequence)-1):
-                    temp_dict[sequence[item:item+2]] +=1
+                    C=sequence.count('C') #count C
+                    G=sequence.count('G') #count G
+                    A=sequence.count('A') #count A
+                    T=sequence.count('T') #count T
+                    total=len(sequence)
+                    resG = float(G)/total #sum of individual nucleotide/total
+                    resC = float(C)/total 
+                    resA = float(A)/total
+                    resT = float(T)/total
+            w.write('The G nucleotide frequency is '+ str(resG)+'\n')
+            w.write('The C nucleotide frequency is '+ str(resC)+'\n') 
+            w.write('The A nucleotide frequency is '+ str(resA)+'\n') 
+            w.write('The T nucleotide frequency is '+ str(resT))  
+
+def compute_dinucleo(input_genome):
+    sequence = ''
+    temp_dict = defaultdict(int)
+    with open(input_genome + '_Dinucleotide_Frequency', 'w') as w:
+        with open(input_genome, 'r') as f:
+            for line in f:
+                undefined=sequence.count('N') 
+                if not line.startswith('>'):
+                    sequence += line
+                for item in range((len(sequence)-1)-(2*undefined)): #excludes N from final count
+                    temp_dict[sequence[item:item+2]] +=1 #finds nucleotides*2, puts in dict and counts them
                 for k,v in sorted(temp_dict.items()):
                     w.write('Dinucleotide frequency of '+ k+' is '+ str(v)+'\n')
 
-def trans_aa(input_fasta): #tanslate ORF list and then comput_aa
+def trans_aa(input_genome): #translate ORF list and then compute_aa
     sequence = ''
     trans_dict = {'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
     'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
@@ -127,30 +131,30 @@ def trans_aa(input_fasta): #tanslate ORF list and then comput_aa
     'TAC':'Y', 'TAT':'Y', 'TGG':'W', 'TGT':'C',
     'TGC':'C'} #didn'include stop since not in ORF
 
-    with open(input_fasta, 'r') as f:
+    with open(input_genome, 'r') as f:
         temp_list = []
         for line in f:
             if not line.startswith('>'):
                 sequence = line 
                 new = ''
-                for i in range(0, len(sequence), 3):
+                for i in range(0, len(sequence), 3): #looks in window of 3 nucleotides at a time
                     if sequence[i:i+3] in trans_dict.keys():
-                        new += trans_dict[sequence[i:i+3]] #if have to create own dictionary              
+                        new += trans_dict[sequence[i:i+3]] #translates the found 3 nucleo(key) to the value in trans_dict            
                 temp_list.append(new)
         return ''.join(temp_list)
                 
                     
-def compute_aa(input_fasta):
+def compute_aa(input_genome):
     list_aa = ['A', 'G', 'I', 'L', 'P', 'V', 'F', 'W','Y', 'D', 'E', 'R', 'H', 'K', 'S', 'T', 'C', 'M', 'N', 'Q'] 
-    trans = trans_aa(input_fasta)
+    trans = trans_aa(input_genome)
     with open(input_fasta + '_amino_acid_frequency', 'w') as w:
         for item in list_aa:
-            i = trans.count(item)
-            res = float(i)/(len(trans)-1)
+            i = trans.count(item) #counts aa from list_aa found in trans(translated sequence)
+            res = float(i)/(len(trans)-1) #number of aa/total
             w.write('Amino acid frequency of '+item+' is ' + str(res) + '\n')
 
 
-def compute_diaa(input_fasta): 
+def compute_diaa(input_genome): 
     list_diaa = ['GG', 'GA', 'GL', 'GM', 'GF', 'GW', 'GK', 'GQ', 'GE', 'GS',
         'GP', 'GV', 'GI', 'GC', 'GY', 'GH', 'GR', 'GN', 'GD', 'GT',
         'AG', 'AA', 'AL', 'AM', 'AF', 'AW', 'AK', 'AQ', 'AE', 'AS',
@@ -191,12 +195,12 @@ def compute_diaa(input_fasta):
         'DP', 'DV', 'DI', 'DC', 'DY', 'DH', 'DR', 'DN', 'DD', 'DT',
         'TG', 'TA', 'TL', 'TM', 'TF', 'TW', 'TK', 'TQ', 'TE', 'TS',
 'TP', 'TV', 'TI', 'TC', 'TY', 'TH', 'TR', 'TN', 'TD', 'TT']
-    trans = trans_aa(input_fasta)
+    trans = trans_aa(input_genome)
     
-    with open(input_fasta + '_Diamino_acid_Frequency', 'w') as w:
+    with open(input_genome + '_Diamino_acid_Frequency', 'w') as w:
         for item in list_diaa:
-            i = trans.count(item)
-            total_count = len(trans)/6
+            i = trans.count(item) #counts diaa from list_diaa found in trans(translated sequence)
+            total_count = len(trans)/6 #divide by 6 because diaa and take into acount that looking at codons before
             res = (float(i)/total_count)*100
             w.write(item+' : '+ str(res)+'\n')            
             
@@ -204,6 +208,9 @@ def compute_diaa(input_fasta):
 if __name__ == '__main__':
     input_genome = sys.argv[1]
     compute_gc(input_genome)   
+    compute_nucleo(input_genome)
     compute_dinucleo(input_genome) 
+    compute_diaa(input_genome)
+    compute_aa(input_genome) 
     ORF_finder(input_genome)
 
