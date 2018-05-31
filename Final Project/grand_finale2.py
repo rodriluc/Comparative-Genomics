@@ -146,7 +146,7 @@ def trans_aa(input_genome): #translate ORF list and then compute_aa
                     
 def compute_aa(input_fasta):
     list_aa = ['A', 'G', 'I', 'L', 'P', 'V', 'F', 'W','Y', 'D', 'E', 'R', 'H', 'K', 'S', 'T', 'C', 'M', 'N', 'Q'] 
-    trans = trans_aa(input_genome)
+    trans = trans_aa(input_fasta)
     with open(input_fasta + '_amino_acid_frequency', 'w') as w:
         for item in list_aa:
             i = trans.count(item) #counts aa from list_aa found in trans(translated sequence)
@@ -195,7 +195,7 @@ def compute_diaa(input_fasta):
         'DP', 'DV', 'DI', 'DC', 'DY', 'DH', 'DR', 'DN', 'DD', 'DT',
         'TG', 'TA', 'TL', 'TM', 'TF', 'TW', 'TK', 'TQ', 'TE', 'TS',
 'TP', 'TV', 'TI', 'TC', 'TY', 'TH', 'TR', 'TN', 'TD', 'TT']
-    trans = trans_aa(input_genome)
+    trans = trans_aa(input_fasta)
     
     with open(input_fasta + '_Diamino_acid_Frequency', 'w') as w:
         for item in list_diaa:
@@ -210,7 +210,5 @@ if __name__ == '__main__':
     compute_gc(input_genome)   
     compute_nucleo(input_genome)
     compute_dinucleo(input_genome) 
-    compute_diaa(input_genome)
-    compute_aa(input_genome) 
     ORF_finder(input_genome)
 
