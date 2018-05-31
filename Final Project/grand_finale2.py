@@ -144,7 +144,7 @@ def trans_aa(input_genome): #translate ORF list and then compute_aa
         return ''.join(temp_list)
                 
                     
-def compute_aa(input_genome):
+def compute_aa(input_fasta):
     list_aa = ['A', 'G', 'I', 'L', 'P', 'V', 'F', 'W','Y', 'D', 'E', 'R', 'H', 'K', 'S', 'T', 'C', 'M', 'N', 'Q'] 
     trans = trans_aa(input_genome)
     with open(input_fasta + '_amino_acid_frequency', 'w') as w:
@@ -154,7 +154,7 @@ def compute_aa(input_genome):
             w.write('Amino acid frequency of '+item+' is ' + str(res) + '\n')
 
 
-def compute_diaa(input_genome): 
+def compute_diaa(input_fasta): 
     list_diaa = ['GG', 'GA', 'GL', 'GM', 'GF', 'GW', 'GK', 'GQ', 'GE', 'GS',
         'GP', 'GV', 'GI', 'GC', 'GY', 'GH', 'GR', 'GN', 'GD', 'GT',
         'AG', 'AA', 'AL', 'AM', 'AF', 'AW', 'AK', 'AQ', 'AE', 'AS',
@@ -197,7 +197,7 @@ def compute_diaa(input_genome):
 'TP', 'TV', 'TI', 'TC', 'TY', 'TH', 'TR', 'TN', 'TD', 'TT']
     trans = trans_aa(input_genome)
     
-    with open(input_genome + '_Diamino_acid_Frequency', 'w') as w:
+    with open(input_fasta + '_Diamino_acid_Frequency', 'w') as w:
         for item in list_diaa:
             i = trans.count(item) #counts diaa from list_diaa found in trans(translated sequence)
             total_count = len(trans)/6 #divide by 6 because diaa and take into acount that looking at codons before
